@@ -115,5 +115,340 @@ Mongoose timestamps automatically provide `createdAt` and `updatedAt` values.
 
 **POST**
 
+`/jobs`
+
+Example request body:
+
+```json
+{
+  "description": "Broken light in classroom",
+  "location": "Classroom 4",
+  "priority": "High"
+}
+```
+
+The `status` field defaults to:
+
+`Submitted`
+
+The `archived` field defaults to:
+
+`false`
+
+---
+
+### Get All Active Jobs
+
+**GET**
+
+`/jobs`
+
+This returns maintenance jobs where:
+
+`archived = false`
+
+Archived jobs are excluded from the standard job listing.
+
+---
+
+### Update a Single Job
+
+**PUT**
+
+`/jobs/:id`
+
+Example:
+
+`/jobs/64f123456789abcdef123456`
+
+Example request body:
+
+```json
+{
+  "status": "In Progress",
+  "priority": "Medium"
+}
+```
+
+The API validates the updated values against the Mongoose schema.
+
+---
+
+### Batch Update Jobs
+
+**PUT**
+
+`/jobs/batch`
+
+Example request body:
+
+```json
+{
+  "jobIds": [
+    "64f123456789abcdef123456",
+    "64f123456789abcdef123457"
+  ],
+  "status": "Completed"
+}
+```
+
+This allows multiple maintenance jobs to be updated in a single request.
+
+---
+
+### Archive a Job
+
+**PUT**
+
+`/jobs/archive/:id`
+
+Example:
+
+`/jobs/archive/64f123456789abcdef123456`
+
+Archiving changes the job's `archived` value to:
+
+`true`
+
+The job is not deleted from the database. Instead, it is excluded from the standard active job results.
+
+---
+
+### Filter Jobs by Status
+
+**GET**
+
+`/jobs/status/:status`
+
+Example:
+
+`/jobs/status/In%20Progress`
+
+This returns active maintenance jobs matching the requested status.
+
+---
+
+## 🔄 API Architecture
+
+The application follows a simple backend architecture:
+
+Client / API Testing Tool
+          ↓
+    Express Server
+          ↓
+      Job Routes
+          ↓
+   Job Controllers
+          ↓
+     Mongoose Model
+          ↓
+     MongoDB Atlas
+
+The Express server receives HTTP requests and directs them to the appropriate route.
+
+The route calls the relevant controller function, which performs the required database operation through the Mongoose `Job` model.
+
+The result is then returned to the client as a JSON response.
+
+---
+
+## 🧩 Backend Structure
+
+The application separates routing, controller logic, and database modelling.
+
+### Routes
+
+The `jobRoutes.js` file defines the API endpoints and connects each route to its corresponding controller.
+
+### Controllers
+
+The `jobController.js` file contains the application logic for:
+
+- Creating jobs
+- Retrieving jobs
+- Updating jobs
+- Batch updating jobs
+- Archiving jobs
+- Filtering jobs
+
+### Model
+
+The `Job.js` file defines the Mongoose schema and validation rules used for maintenance jobs.
+
+This separation keeps the API organised and makes the application easier to maintain.
+
+---
+
+## 🔐 Environment Configuration
+
+The MongoDB connection string is stored using an environment variable rather than being hard-coded into the application.
+
+The `dotenv` package loads environment variables from a local `.env` file.
+
+Create a `.env` file in the project root:
+
+```env
+MONGO_URI=your_mongodb_connection_string
+```
+
+Replace the placeholder with your own MongoDB Atlas connection string.
+
+### Security
+
+The `.env` file contains sensitive database credentials and must not be committed to GitHub.
+
+The project's `.gitignore` file excludes:
+
 ```text
-/jobs
+.env
+node_modules
+```
+
+This prevents environment variables and installed dependencies from being uploaded to the repository.
+
+---
+
+## ⚙️ Installation
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/DyllanMeissenheimer23/maintenance-management-api.git
+```
+
+Navigate into the project:
+
+```bash
+cd maintenance-management-api
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Configure environment variables
+
+Create a `.env` file in the project root:
+
+```env
+MONGO_URI=your_mongodb_connection_string
+```
+
+Add your MongoDB Atlas connection string.
+
+Do not commit the `.env` file to GitHub.
+
+### 4. Start the development server
+
+```bash
+npm run dev
+```
+
+The server will run on:
+
+`http://localhost:3000`
+
+---
+
+## 🧪 Testing
+
+The API was tested during development to verify the functionality of the maintenance management endpoints.
+
+The following operations were tested:
+
+- Creating maintenance jobs
+- Retrieving maintenance jobs
+- Updating individual jobs
+- Batch updating jobs
+- Archiving jobs
+- Filtering jobs by status
+
+The API can also be tested using tools such as Postman or Thunder Client.
+
+---
+
+## 📁 Project Structure
+
+```text
+maintenance-management-api/
+│
+├── controllers/
+│   └── jobController.js
+│
+├── models/
+│   └── Job.js
+│
+├── routes/
+│   └── jobRoutes.js
+│
+├── app.js
+├── package.json
+├── package-lock.json
+├── .gitignore
+├── .env
+└── README.md
+```
+
+> The `.env` file should remain local and must not be committed to the repository.
+
+---
+
+## 🧠 Key Backend Concepts Demonstrated
+
+This project demonstrates practical experience with:
+
+- RESTful API development
+- Node.js
+- Express.js
+- Express routing
+- MVC-style separation of routes, controllers, and models
+- MongoDB Atlas
+- Mongoose
+- Mongoose schemas
+- Schema validation
+- CRUD operations
+- Batch database updates
+- Soft archiving
+- Database querying and filtering
+- Asynchronous JavaScript
+- Error handling
+- HTTP status codes
+- Environment variables
+- Git and GitHub
+
+---
+
+## 🔮 Future Improvements
+
+Potential future improvements include:
+
+- Add a React frontend
+- Add user authentication and authorisation
+- Add pagination
+- Add advanced filtering and sorting
+- Add maintenance job search
+- Add technician assignment
+- Add due dates and maintenance schedules
+- Add automated unit and integration tests
+- Add API documentation using Swagger/OpenAPI
+- Deploy the API to a cloud platform
+
+---
+
+## 👨‍💻 Author
+
+**Dyllan Meissenheimer**
+
+Postgraduate Diploma in Information Technology Management
+
+Aspiring Full Stack Web Developer
+
+---
+
+## 📚 Project Context
+
+This project was originally developed as part of the HyperionDev Web Frameworks coursework and has been prepared as a standalone backend portfolio project.
+
+It demonstrates practical experience building a REST API with Node.js and Express.js, integrating MongoDB Atlas through Mongoose, implementing database operations, and structuring backend functionality using routes, controllers, and models.
